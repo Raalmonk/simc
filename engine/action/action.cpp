@@ -30,6 +30,7 @@
 #include "util/io.hpp"
 #include "util/util.hpp"
 
+#include <cstdio>
 #include <utility>
 
 // ==========================================================================
@@ -2029,6 +2030,22 @@ void action_t::execute()
   {
     timespan_t total_delay = composite_dot_duration( execute_state ) + ( 2 * rng().gauss( player->world_lag) );
     player->reset_auto_attacks( total_delay, player->procs.reset_aa_channel );
+  }
+
+  if ( this->player && this->player->is_player() && this->player->type == MONK )
+  {
+    if ( this->name_str.find( "melee" ) == std::string::npos &&
+         this->name_str.find( "auto_attack" ) == std::string::npos && this->type != ACTION_OTHER &&
+         this->type != ACTION_SEQUENCE )
+    {
+      const double base_damage = execute_state ? execute_state->result_raw : 0.0;
+      const double crit_chance = composite_crit_chance() * 100.0;
+      const double crit_multiplier = execute_state ? 1.0 + total_crit_bonus( execute_state ) : 1.0;
+
+      fprintf( stdout, "@@MVP_HOOK@@|%.3f|%s|%.2f|%.4f|%.4f\n", sim->current_time().total_seconds(),
+               this->name_str.c_str(), base_damage, crit_chance, crit_multiplier );
+      fflush( stdout );
+    }
   }
 
   last_used = sim->current_time();
