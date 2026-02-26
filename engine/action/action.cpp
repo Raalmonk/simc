@@ -2032,7 +2032,7 @@ void action_t::execute()
     player->reset_auto_attacks( total_delay, player->procs.reset_aa_channel );
   }
 
-  if ( this->player && this->player->is_player() && this->player->type == MONK )
+  if ( this->player && this->player->is_player() )
   {
     if ( this->name_str.find( "melee" ) == std::string::npos &&
          this->name_str.find( "auto_attack" ) == std::string::npos && this->type != ACTION_OTHER &&
